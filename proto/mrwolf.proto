@@ -1,0 +1,59 @@
+syntax="proto3";
+package mrwolf;
+
+service Clock {
+  rpc Add(AddReq) returns (AddRes);
+  rpc Get(GetReq) returns (GetRes);
+  rpc Update(UpdateReq) returns (Empty);
+
+  rpc WhatsMyBalance(Empty) returns (BalanceRes);
+  rpc WhatsTheTime(TimeReq) returns (TimeRes);
+}
+
+message Empty {
+}
+
+message AddReq {
+  bytes pub_key = 1; // Or pubkeyhash?
+  uint64 pot = 2;
+}
+
+message AddRes {
+  string id = 1; // uuid
+}
+
+message GetReq {
+  string id = 1;
+}
+
+message GetRes {
+  string id = 1; // uuid
+  bytes pub_key = 7; // 
+  uint64 pot = 2; // Cumulative total in pot
+  uint64 used = 3; // Cumulative used so far
+  uint64 iou = 4; // highest iou. Should be that: used <= iou <= pot
+  bytes nonce = 5; // sign (iou, nonce)   
+  bytes sig = 6; // proof of iou
+}
+
+message UpdateReq {
+  string id = 1;
+  uint64 balanace = 2;
+}
+
+message TimeReq {
+  string id = 1;
+  uint64 iou = 2;
+  bytes nonce = 3;
+  bytes sig = 4;
+}
+
+message TimeRes {
+  string message = 1;
+}
+
+message BalanceRes {
+  uint64 pot = 1; // Cumulative total in pot
+  uint64 used = 2; // Cumulative used so far
+  uint64 iou = 3; // highest iou. Should be that: used <= iou <= pot
+}
