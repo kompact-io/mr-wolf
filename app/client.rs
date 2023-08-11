@@ -30,7 +30,7 @@ fn mk_request(keypair: [u8; 64], id: &str, iou: u64) -> tonic::Request<TimeReq> 
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut client = ClockClient::connect("http://[::1]:50051").await?;
+    let mut client = ClockClient::connect("http://192.168.1.234:50051").await?;
     // Subscriber generates secret and declares pub_key
     let prv_key = [0u8; 32]; // private key only for example !
     let (keypair, pub_key_arr) = ed25519::keypair(&prv_key);
