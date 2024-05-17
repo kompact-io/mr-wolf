@@ -42,11 +42,11 @@
             nativeBuildInputs =
               (old.nativeBuildInputs or [])
               ++ (with pkgs; [
-                trunk 
-                nodePackages.sass 
-                wasm-bindgen-cli
+                # trunk 
+                # nodePackages.sass 
+                # wasm-bindgen-cli
                 protobuf
-                ghz
+                # ghz
               ]);
             # override build phase to build with trunk instead
             buildPhase = ''
@@ -64,7 +64,13 @@
           profiles = {release.runTests = false;};
         };
         # export the crate devshell as the default devshell
-        devShells.default = crateOutputs.devShell;
+        devShells.default = crateOutputs.devShell.overrideAttrs (old: {
+          packages = (old.packages or []) ++ [pkgs.rust-analyzer];
+          shellHook = ''
+            ${old.shellHook or ""}
+            echo "rust dev shell!"
+          '';
+        });
         # export the release package of the crate as default package
         packages.default = crateOutputs.packages.release;
       };

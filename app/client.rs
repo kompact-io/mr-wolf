@@ -30,7 +30,7 @@ fn mk_request(keypair: [u8; 64], id: &str, iou: u64) -> tonic::Request<TimeReq> 
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut client = ClockClient::connect("http://192.168.1.234:50051").await?;
+    let mut client = ClockClient::connect("http://0.0.0.0:50051").await?;
     // Subscriber generates secret and declares pub_key
     let prv_key = [0u8; 32]; // private key only for example !
     let (keypair, pub_key_arr) = ed25519::keypair(&prv_key);
@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Provider adds details to service
     // And hands back subscriber id
     let add_req = tonic::Request::new(AddReq {
-        pot: 10000,
+        pot: 20000,
         pub_key,
     });
 
@@ -54,12 +54,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let start = response.into_inner().message;
     let start_time = DateTime::parse_from_str(&start, "New %+").unwrap();
     println!("ID={} UTC={:?}", id, start);
-    for ii in 2..10000 {
+    for ii in 2..20000 {
         let request = mk_request(keypair, &id, ii);
         let response = client.whats_the_time(request).await?;
         let _utc = response.into_inner().message;
     }
-    let request = mk_request(keypair, &id, 10000);
+    let request = mk_request(keypair, &id, 20000);
     let response = client.whats_the_time(request).await?;
     let end = response.into_inner().message;
     println!("ID={} UTC={:?}", id, end);
